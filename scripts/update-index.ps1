@@ -1,8 +1,8 @@
 # Update-Index.ps1
-# PowerShell script to automatically update posts/index.json based on markdown files in the posts directory
+# PowerShell script to automatically update blog/index.json based on markdown files in the blog directory
 
 param (
-    [string]$PostsDirectory,
+    [string]$BlogDirectory,
     [string]$OutputFile
 )
 
@@ -11,14 +11,14 @@ $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = (Resolve-Path "$scriptPath\..").Path
 
 # Set defaults if not provided
-if (-not $PostsDirectory) { $PostsDirectory = Join-Path $repoRoot 'posts' }
-if (-not $OutputFile)     { $OutputFile     = Join-Path $PostsDirectory 'index.json' }
+if (-not $BlogDirectory) { $BlogDirectory = Join-Path $repoRoot 'blog' }
+if (-not $OutputFile)     { $OutputFile     = Join-Path $BlogDirectory 'index.json' }
 
 # Optional: ensure Write-Verbose always works
 $VerbosePreference = "Continue"
 
 Write-Verbose "Starting index.json generation..."
-Write-Verbose "Posts directory: $PostsDirectory"
+Write-Verbose "Blog directory: $BlogDirectory"
 Write-Verbose "Output file: $OutputFile"
 
 # Delete existing index.json file if it exists
@@ -27,8 +27,8 @@ if (Test-Path $OutputFile) {
     Remove-Item -Path $OutputFile -Force
 }
 
-# Get all files from the posts directory
-$allPostFiles = Get-ChildItem -Path $PostsDirectory -Filter "*.md" -File
+# Get all files from the blog directory
+$allPostFiles = Get-ChildItem -Path $BlogDirectory -Filter "*.md" -File
 
 Write-Host "All post files: $($allPostFiles.Count)" 
 
@@ -103,7 +103,7 @@ $sortedPosts = $validPosts | Sort-Object { [DateTime]::Parse($_.date) } -Descend
 # Report validation results
 Write-Host "Found $($validPosts.Count) valid posts" -ForegroundColor Green
 if ($invalidFiles.Count -gt 0) {
-    Write-Host "Found $($invalidFiles.Count) invalid files in posts directory" -ForegroundColor Red
+    Write-Host "Found $($invalidFiles.Count) invalid files in blog directory" -ForegroundColor Red
     Write-Host "Files must follow YYYY-MM-DD-title.md naming convention with year >= 2025" -ForegroundColor Yellow
 }
 

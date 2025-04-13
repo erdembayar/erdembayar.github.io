@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Erdembayar - Personal Website</title>
-    <meta name="description" content="Personal website and blog for Erdembayar">
+    <title>The Hidden Danger of 0 in Enums - Erdembayar</title>
+    <meta name="description" content="Why Using 0 as a Default Enum Value in C# Is a Bug Waiting to Happen">
     <!-- Cache control -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
     <!-- Add Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Load main.js before the page loads -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="js/main.js"></script>
+    <script src="../js/main.js?v=20250413002"></script>
 </head>
 <body>
     <main id="main-content">
@@ -22,5 +23,13 @@
     </main>
 
     <div id="footer-placeholder"></div>
+
+    <script>
+        // Wait for the DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPost('2025-04-10-hiddendangerofenumdefaults');
+            loadFooter();
+        });
+    </script>
 </body>
-</html>
+</html> 

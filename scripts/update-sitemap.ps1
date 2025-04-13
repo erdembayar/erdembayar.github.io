@@ -1,8 +1,8 @@
 # Update-Sitemap.ps1
-# PowerShell script to automatically update sitemap.xml based on files in the posts directory
+# PowerShell script to automatically update sitemap.xml based on files in the blog directory
 
 param (
-    [string]$PostsDirectory,
+    [string]$BlogDirectory,
     [string]$OutputFile,
     [string]$BaseUrl = "https://erdembayar.github.io"
 )
@@ -12,18 +12,18 @@ $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = (Resolve-Path "$scriptPath\..").Path
 
 # Set defaults if not provided
-if (-not $PostsDirectory) { $PostsDirectory = Join-Path $repoRoot 'posts' }
+if (-not $BlogDirectory) { $BlogDirectory = Join-Path $repoRoot 'blog' }
 if (-not $OutputFile)     { $OutputFile     = Join-Path $repoRoot 'sitemap.xml' }
 
 # Optional: ensure Write-Verbose always works
 $VerbosePreference = "Continue"
 
 Write-Verbose "Starting sitemap generation..."
-Write-Verbose "Posts directory: $PostsDirectory"
+Write-Verbose "Blog directory: $BlogDirectory"
 Write-Verbose "Output file: $OutputFile"
 
-# Get all files from the posts directory
-$allPostFiles = Get-ChildItem -Path $PostsDirectory -File
+# Get all markdown files from the blog directory
+$allPostFiles = Get-ChildItem -Path $BlogDirectory -Filter "*.md" -File
 
 # Validate file naming convention and filter for valid posts
 $validPostFiles = @()
@@ -32,12 +32,6 @@ $invalidPostFiles = @()
 foreach ($file in $allPostFiles) {
     # Skip index.json and README.md files
     if ($file.Name -eq "index.json" -or $file.Name -eq "README.md") {
-        continue
-    }
-    
-    # Check if file has .md extension
-    if ($file.Extension -ne ".md") {
-        $invalidPostFiles += $file
         continue
     }
     
@@ -81,7 +75,7 @@ $postFiles = $validPostFiles | Sort-Object PostDate -Descending
 # Report validation results
 Write-Host "Found $($postFiles.Count) valid posts" -ForegroundColor Green
 if ($invalidPostFiles.Count -gt 0) {
-    Write-Host "Found $($invalidPostFiles.Count) invalid files in posts directory" -ForegroundColor Red
+    Write-Host "Found $($invalidPostFiles.Count) invalid files in blog directory" -ForegroundColor Red
     Write-Host "Files must follow YYYY-MM-DD-title.md naming convention with year >= 2025" -ForegroundColor Yellow
 }
 
@@ -101,6 +95,16 @@ $xml += @"
         <loc>$BaseUrl/index.html</loc>
         <lastmod>$(Get-Date -Format "yyyy-MM-dd")</lastmod>
         <priority>1.0</priority>
+    </url>
+"@
+
+# Add blog listing page
+$xml += @"
+
+    <url>
+        <loc>$BaseUrl/blog/index.html</loc>
+        <lastmod>$(Get-Date -Format "yyyy-MM-dd")</lastmod>
+        <priority>0.9</priority>
     </url>
 "@
 
@@ -126,11 +130,11 @@ foreach ($file in $postFiles) {
     $lastMod = $file.LastWriteTime.ToString("yyyy-MM-dd")
     $postId = $file.BaseName
     
-    # For markdown posts, we use the index.html?post=ID format instead of direct file links
+    # For markdown posts, we now use the blog/post-name.html format
     $xml += @"
 
     <url>
-        <loc>$BaseUrl/index.html?post=$postId</loc>
+        <loc>$BaseUrl/blog/$postId.html</loc>
         <lastmod>$lastMod</lastmod>
         <priority>0.7</priority>
     </url>
@@ -147,4 +151,4 @@ $xml += @"
 $xml | Out-File -FilePath $OutputFile -Encoding UTF8
 
 Write-Host "Sitemap generated successfully at $OutputFile"
-Write-Host "Added $($postFiles.Count) posts and $($rootPages.Count - 1) root pages to the sitemap"
+Write-Host "Added $($postFiles.Count) posts and $($rootPages.Count) root pages to the sitemap"

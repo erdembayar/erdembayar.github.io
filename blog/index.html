@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Erdembayar - Personal Website</title>
-    <meta name="description" content="Personal website and blog for Erdembayar">
+    <title>Erdembayar - Blog</title>
+    <meta name="description" content="Blog posts by Erdembayar">
     <!-- Cache control -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
     <!-- Add Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="js/main.js"></script>
+    <script src="../js/main.js"></script>
 </head>
 <body>
     <main id="main-content">
@@ -22,5 +22,13 @@
     </main>
 
     <div id="footer-placeholder"></div>
+
+    <script>
+        // Load the blog listing page when the document loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBlogPage();
+            loadFooter();
+        });
+    </script>
 </body>
-</html>
+</html> 

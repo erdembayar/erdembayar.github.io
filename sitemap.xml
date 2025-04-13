@@ -6,17 +6,22 @@
         <priority>1.0</priority>
     </url>
     <url>
+        <loc>https://erdembayar.github.io/blog/index.html</loc>
+        <lastmod>2025-04-13</lastmod>
+        <priority>0.9</priority>
+    </url>
+    <url>
         <loc>https://erdembayar.github.io/404.html</loc>
-        <lastmod>2025-04-09</lastmod>
+        <lastmod>2025-04-13</lastmod>
         <priority>0.8</priority>
     </url>
     <url>
         <loc>https://erdembayar.github.io/blog.html</loc>
-        <lastmod>2025-04-12</lastmod>
+        <lastmod>2025-04-13</lastmod>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://erdembayar.github.io/index.html?post=2025-04-10-hiddendangerofenumdefaults</loc>
+        <loc>https://erdembayar.github.io/blog/2025-04-10-hiddendangerofenumdefaults.html</loc>
         <lastmod>2025-04-13</lastmod>
         <priority>0.7</priority>
     </url>

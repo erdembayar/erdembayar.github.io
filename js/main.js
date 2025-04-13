@@ -7,14 +7,29 @@ document.addEventListener('DOMContentLoaded', function() {
     loadFooter();
 });
 
-// Handle routing based on URL parameters
+// Handle routing based on URL path
 function setupRouting() {
-    // Get the URL parameters
+    // Get the current path
+    const path = window.location.pathname;
+    
+    // Check if we're in a dedicated HTML page - if so, let it handle loading
+    if (path.includes('/blog/') && document.querySelector('script[src="../js/main.js"]')) {
+        // This is running from a dedicated blog HTML file that will handle its own loading
+        return;
+    }
+    
+    // Check if we're on the blog listing page
+    if (path.endsWith('/blog') || path.endsWith('/blog/') || path.endsWith('/blog/index.html')) {
+        loadBlogPage();
+        return;
+    }
+    
+    // Fallback to query parameters for backward compatibility
     const params = new URLSearchParams(window.location.search);
     const postId = params.get('post');
     
     if (postId) {
-        // Load a specific post
+        // Load a specific post (legacy URL format)
         loadPost(postId);
     } else {
         // Load the home page content
@@ -29,6 +44,9 @@ function loadHomePage() {
     
     // Set page title
     document.title = 'Erdembayar - Personal Website';
+    
+    // Get the base path
+    const basePath = window.location.origin;
     
     // Inject the home page content
     mainContent.innerHTML = `
@@ -47,7 +65,7 @@ function loadHomePage() {
                             <div class="loading">Loading posts...</div>
                         </div>
                         <div class="text-center">
-                            <a href="#" class="btn" id="view-all-btn">View All Posts</a>
+                            <a href="${basePath}/blog/index.html" class="btn" id="view-all-btn">View All Posts</a>
                         </div>
                     </div>
                     
@@ -83,11 +101,19 @@ function loadPost(postId) {
     const mainContent = document.getElementById('main-content');
     if (!mainContent) return;
     
+    // Strip .html extension if present
+    if (postId && postId.endsWith('.html')) {
+        postId = postId.substring(0, postId.length - 5);
+    }
+    
     // Show loading indicator
     mainContent.innerHTML = '<div class="loading">Loading post...</div>';
     
+    // Ensure we're using absolute paths for fetch
+    const basePath = window.location.origin;
+    
     // Fetch post metadata from index.json
-    fetch('posts/index.json')
+    fetch(`${basePath}/blog/index.json`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`Failed to fetch posts metadata (status: ${response.status})`);
@@ -126,7 +152,7 @@ function loadPost(postId) {
                             <h2>${title}</h2>
                             <p>Posted on ${formattedDate}</p>
                             <div class="post-nav">
-                                <a href="index.html">← Back to Home</a>
+                                <a href="${basePath}/">← Back to Home</a>
                             </div>
                         </div>
                     </section>
@@ -142,8 +168,8 @@ function loadPost(postId) {
                     </section>
                 `;
                 
-                // Load the markdown content from the posts folder
-                return fetch(`posts/${postId}.md`);
+                // Load the markdown content from the blog folder
+                return fetch(`${basePath}/blog/${postId}.md`);
             } else {
                 // Post not found in index.json, fall back to parsing from filename
                 // Extract metadata from the post ID (YYYY-MM-DD-title format)
@@ -177,7 +203,7 @@ function loadPost(postId) {
                                 <h2>${title}</h2>
                                 <p>Posted on ${formattedDate}</p>
                                 <div class="post-nav">
-                                    <a href="index.html">← Back to Home</a>
+                                    <a href="${basePath}/">← Back to Home</a>
                                 </div>
                             </div>
                         </section>
@@ -193,8 +219,8 @@ function loadPost(postId) {
                         </section>
                     `;
                     
-                    // Load the markdown content from the posts folder
-                    return fetch(`posts/${postId}.md`);
+                    // Load the markdown content from the blog folder
+                    return fetch(`${basePath}/blog/${postId}.md`);
                 } else {
                     throw new Error('Invalid post ID format');
                 }
@@ -211,7 +237,33 @@ function loadPost(postId) {
             const contentWithoutTitle = markdown.split('\n').slice(1).join('\n');
             
             // Convert Markdown to HTML and insert into the page
-            document.getElementById('post-body').innerHTML = marked.parse(contentWithoutTitle);
+            const postBody = document.getElementById('post-body');
+            if (postBody) {
+                postBody.innerHTML = marked.parse(contentWithoutTitle);
+            } else {
+                console.error('Could not find post-body element');
+                // Recreate the post structure if the element wasn't found
+                mainContent.innerHTML = `
+                    <section class="hero">
+                        <div class="container narrow-container">
+                            <h2>${document.title.replace(' - Erdembayar', '')}</h2>
+                            <div class="post-nav">
+                                <a href="${basePath}/">← Back to Home</a>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <section class="content-section">
+                        <div class="container narrow-container">
+                            <article class="post-content">
+                                <div id="post-body" class="markdown-content">
+                                    ${marked.parse(contentWithoutTitle)}
+                                </div>
+                            </article>
+                        </div>
+                    </section>
+                `;
+            }
         })
         .catch(error => {
             console.error('Error loading post:', error);
@@ -221,7 +273,7 @@ function loadPost(postId) {
                     <div class="container narrow-container">
                         <h2>Error Loading Post</h2>
                         <div class="post-nav">
-                            <a href="index.html">← Back to Home</a>
+                            <a href="${basePath}/">← Back to Home</a>
                         </div>
                     </div>
                 </section>
@@ -246,8 +298,11 @@ function loadBlogPage() {
     // Set page title
     document.title = 'Blog - Erdembayar';
     
+    // Get the base path
+    const basePath = window.location.origin;
+    
     // Update URL without reloading the page
-    history.pushState(null, '', 'index.html?page=blog');
+    history.pushState(null, '', `${basePath}/blog/index.html`);
     
     // Inject the blog page content
     mainContent.innerHTML = `
@@ -255,7 +310,7 @@ function loadBlogPage() {
             <div class="container narrow-container">
                 <h2>Blog - Erdembayar</h2>
                 <div class="post-nav">
-                    <a href="index.html">← Back to Home</a>
+                    <a href="${basePath}/">← Back to Home</a>
                 </div>
             </div>
         </section>
@@ -295,8 +350,11 @@ function loadBlogPosts(limitPosts = true) {
     // Show loading indicator
     postGrid.innerHTML = '<div class="loading">Loading posts...</div>';
     
+    // Get the base path
+    const basePath = window.location.origin;
+    
     // Fetch the list of posts from the server
-    fetch('posts/index.json')
+    fetch(`${basePath}/blog/index.json`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`Failed to fetch posts (status: ${response.status})`);
@@ -334,7 +392,7 @@ function loadBlogPosts(limitPosts = true) {
                 
                 postItem.innerHTML = `
                     <div class="post-date">${formattedDate}</div>
-                    <h3 class="post-title"><a href="index.html?post=${post.id}">${post.title}</a></h3>
+                    <h3 class="post-title"><a href="${basePath}/blog/${post.id}.html">${post.title}</a></h3>
                 `;
                 
                 postGrid.appendChild(postItem);

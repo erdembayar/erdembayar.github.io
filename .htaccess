@@ -1,0 +1,10 @@
+RewriteEngine On
+
+# Rewrite /blog (for the blog listing page) to index.html
+RewriteRule ^blog$ index.html [L]
+
+# Rewrite /blog/any-post-name to index.html
+RewriteRule ^blog/(.*)$ index.html [L]
+
+# Handle 404 errors
+ErrorDocument 404 /404.html 

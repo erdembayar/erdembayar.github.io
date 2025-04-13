@@ -1,4 +1,4 @@
-# Blog Posts
+# Blog Directory
 
 This directory contains all blog posts for the website.
 
@@ -9,18 +9,15 @@ This directory contains all blog posts for the website.
 
 2. Add your post content in Markdown format.
 
-3. Update the `index.json` file by adding a new entry:
-   ```json
-   {
-     "title": "Your Post Title",
-     "date": "YYYY-MM-DD",
-     "id": "YYYY-MM-DD-title"
-   }
+3. Run the update script to regenerate the `index.json` file:
+   ```powershell
+   .\scripts\update-index.ps1
    ```
 
 ## File Structure
 
 - `index.json` - Contains metadata for all blog posts
 - `*.md` - Individual blog post content files
+- `*.html` - HTML wrappers for each blog post
 
 All posts will be automatically loaded and displayed on the website. 
